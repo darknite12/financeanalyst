@@ -1,58 +1,70 @@
 package org.diytechprojects.financeanalyst.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * The persistent class for the transaction database table.
  * 
  */
 @Entity
-@NamedQuery(name="Transaction.findAll", query="SELECT t FROM Transaction t")
+@NamedQuery(name = "Transaction.findAll", query = "SELECT t FROM Transaction t")
 public class Transaction implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="transaction_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "transaction_id")
 	private String transactionId;
 
-	@Column(name="account_number")
+	@Column(name = "account_number")
 	private String accountNumber;
 
-	@Column(name="account_type")
+	@Column(name = "account_type")
 	private String accountType;
 
-	@Column(name="amount_cad")
+	@Column(name = "amount_cad")
 	private Float amountCad;
 
-	@Column(name="amount_usd")
+	@Column(name = "amount_usd")
 	private Float amountUsd;
 
-	@Column(name="cheque_number")
+	@Column(name = "cheque_number")
 	private String chequeNumber;
 
-	@Column(name="description_1")
+	@Column(name = "description_1")
 	private String description1;
 
-	@Column(name="description_2")
+	@Column(name = "description_2")
 	private String description2;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="transaction_date")
+	@Column(name = "transaction_date")
 	private Date transactionDate;
 
-	//bi-directional many-to-one association to Expense
+	// bi-directional many-to-one association to Expense
 	@ManyToOne
-	@JoinColumn(name="expense_id")
+	@JoinColumn(name = "expense_id")
 	private Expense expense;
 
-	//bi-directional many-to-one association to Income
+	// bi-directional many-to-one association to Income
 	@ManyToOne
-	@JoinColumn(name="income_id")
+	@JoinColumn(name = "income_id")
 	private Income income;
+
+	@Column(name = "is_tracked")
+	private Boolean isTracked;
 
 	public Transaction() {
 	}
@@ -143,6 +155,27 @@ public class Transaction implements Serializable {
 
 	public void setIncome(Income income) {
 		this.income = income;
+	}
+
+	public Boolean getIsTracked() {
+		return this.isTracked;
+	}
+
+	public void setIsTracked(Boolean isTracked) {
+		this.isTracked = isTracked;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Transaction [transactionId=").append(transactionId).append(", accountNumber=")
+				.append(accountNumber).append(", accountType=").append(accountType).append(", amountCad=")
+				.append(amountCad).append(", amountUsd=").append(amountUsd).append(", chequeNumber=")
+				.append(chequeNumber).append(", description1=").append(description1).append(", description2=")
+				.append(description2).append(", transactionDate=").append(transactionDate).append(", expense=")
+				.append(expense).append(", income=").append(income).append(", isTracked=").append(isTracked)
+				.append("]");
+		return builder.toString();
 	}
 
 }

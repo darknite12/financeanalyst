@@ -75,14 +75,13 @@ CREATE TABLE `transaction` (
   `amount_usd` float DEFAULT NULL,
   `income_id` bigint(20) DEFAULT NULL,
   `expense_id` bigint(20) DEFAULT NULL,
+  `is_tracked` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`transaction_id`),
   KEY `transaction_income_fk` (`income_id`),
   KEY `transaction_expense_fk` (`expense_id`),
   CONSTRAINT `transaction_expense_fk` FOREIGN KEY (`expense_id`) REFERENCES `expense` (`expense_id`),
   CONSTRAINT `transaction_income_fk` FOREIGN KEY (`income_id`) REFERENCES `income` (`income_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=512 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
+) ENGINE=InnoDB AUTO_INCREMENT=512 DEFAULT CHARSET=utf8
 --
 -- Dumping routines for database 'financesdb'
 --

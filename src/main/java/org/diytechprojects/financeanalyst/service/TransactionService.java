@@ -25,49 +25,55 @@ public class TransactionService {
 
 	public void categorizeTransaction() {
 
-		List<Transaction> unanalizedTransactions = repo.findByIncomeNullAndExpenseNull();
+		List<Transaction> untrackedTransactions = repo.findByIsTrackedNull();
 
-		for (Transaction transaction : unanalizedTransactions) {
+		for (Transaction transaction : untrackedTransactions) {
 			if (transaction.getAmountCad() != null) {
 				if (transaction.getAmountCad() > 0) {
 					Iterable<Income> incomes = incomeRepository.findAll();
 					for(Income income : incomes) {
-						if (income.getSearchString1() != null && income.getSearchString2() != null) {
-							if (transaction.getDescription1().contains(income.getSearchString1()) && transaction.getDescription2().contains(income.getSearchString2())) {
-								transaction.setIncome(income);
-							}
-						} else if (income.getSearchString1() != null && income.getSearchString2() == null) {
-							if (transaction.getDescription1().contains(income.getSearchString1())) {
-								transaction.setIncome(income);
-							}
-						} else if (income.getSearchString1() == null && income.getSearchString2() != null) {
-							if (transaction.getDescription2().contains(income.getSearchString2())) {
-								transaction.setIncome(income);
-							}
+						if (isTransactionTracked(transaction, income)) {
+							transaction.setIncome(income);
+							transaction.setIsTracked(true);
 						}
 					}
 				} else {
 					Iterable<Expense> expenses = expenseRepository.findAll();
 					for(Expense expense : expenses) {
-						if (expense.getSearchString1() != null && expense.getSearchString2() != null) {
-							if (transaction.getDescription1().contains(expense.getSearchString1()) && transaction.getDescription2().contains(expense.getSearchString2())) {
-								transaction.setExpense(expense);
-							}
-						} else if (expense.getSearchString1() != null && expense.getSearchString2() == null) {
-							if (transaction.getDescription1().contains(expense.getSearchString1())) {
-								transaction.setExpense(expense);
-							}
-						} else if (expense.getSearchString1() == null && expense.getSearchString2() != null) {
-							if (transaction.getDescription2().contains(expense.getSearchString2())) {
-								transaction.setExpense(expense);
-							}
+						if (isTransactionTracked(transaction, expense)) {
+							transaction.setExpense(expense);
+							transaction.setIsTracked(true);
 						}
 					}
 				}
-
 			}
 			repo.save(transaction);
 		}
+	}
+	
+	private boolean isTransactionTracked(Transaction transaction, Object transactionType) {
+		boolean isTracked  = false;
+		if (transactionType instanceof Income) {
+			Income income = (Income) transactionType;
+			if (income.getSearchString1() != null && income.getSearchString2() != null) {
+				isTracked = transaction.getDescription1().contains(income.getSearchString1()) && transaction.getDescription2().contains(income.getSearchString2());
+			} else if (income.getSearchString1() != null && income.getSearchString2() == null) {
+				isTracked = transaction.getDescription1().contains(income.getSearchString1());
+			} else if (income.getSearchString1() == null && income.getSearchString2() != null) {
+				isTracked = transaction.getDescription2().contains(income.getSearchString2());
+			}
+		} else if (transactionType instanceof Expense) {
+			Expense expense = (Expense) transactionType;
+			if (expense.getSearchString1() != null && expense.getSearchString2() != null) {
+				isTracked = transaction.getDescription1().contains(expense.getSearchString1()) && transaction.getDescription2().contains(expense.getSearchString2());
+			} else if (expense.getSearchString1() != null && expense.getSearchString2() == null) {
+				isTracked = transaction.getDescription1().contains(expense.getSearchString1());
+			} else if (expense.getSearchString1() == null && expense.getSearchString2() != null) {
+				isTracked = transaction.getDescription2().contains(expense.getSearchString2());
+			}
+		}
+		return isTracked;
+		
 	}
 
 }
