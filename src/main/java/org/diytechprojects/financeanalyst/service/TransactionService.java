@@ -16,10 +16,10 @@ public class TransactionService {
 
 	@Autowired
 	TransactionRepository repo;
-	
+
 	@Autowired
 	IncomeRepository incomeRepository;
-	
+
 	@Autowired
 	ExpenseRepository expenseRepository;
 
@@ -31,7 +31,7 @@ public class TransactionService {
 			if (transaction.getAmountCad() != null) {
 				if (transaction.getAmountCad() > 0) {
 					Iterable<Income> incomes = incomeRepository.findAll();
-					for(Income income : incomes) {
+					for (Income income : incomes) {
 						if (isTransactionTracked(transaction, income)) {
 							transaction.setIncome(income);
 							transaction.setIsTracked(true);
@@ -39,7 +39,7 @@ public class TransactionService {
 					}
 				} else {
 					Iterable<Expense> expenses = expenseRepository.findAll();
-					for(Expense expense : expenses) {
+					for (Expense expense : expenses) {
 						if (isTransactionTracked(transaction, expense)) {
 							transaction.setExpense(expense);
 							transaction.setIsTracked(true);
@@ -50,13 +50,14 @@ public class TransactionService {
 			repo.save(transaction);
 		}
 	}
-	
+
 	private boolean isTransactionTracked(Transaction transaction, Object transactionType) {
-		boolean isTracked  = false;
+		boolean isTracked = false;
 		if (transactionType instanceof Income) {
 			Income income = (Income) transactionType;
 			if (income.getSearchString1() != null && income.getSearchString2() != null) {
-				isTracked = transaction.getDescription1().contains(income.getSearchString1()) && transaction.getDescription2().contains(income.getSearchString2());
+				isTracked = transaction.getDescription1().contains(income.getSearchString1())
+						&& transaction.getDescription2().contains(income.getSearchString2());
 			} else if (income.getSearchString1() != null && income.getSearchString2() == null) {
 				isTracked = transaction.getDescription1().contains(income.getSearchString1());
 			} else if (income.getSearchString1() == null && income.getSearchString2() != null) {
@@ -65,15 +66,27 @@ public class TransactionService {
 		} else if (transactionType instanceof Expense) {
 			Expense expense = (Expense) transactionType;
 			if (expense.getSearchString1() != null && expense.getSearchString2() != null) {
-				isTracked = transaction.getDescription1().contains(expense.getSearchString1()) && transaction.getDescription2().contains(expense.getSearchString2());
+				if (transaction.getDescription2() == null) {
+					isTracked = transaction.getDescription1().contains(expense.getSearchString1());
+				} else {
+					isTracked = transaction.getDescription1().contains(expense.getSearchString1())
+							&& transaction.getDescription2().contains(expense.getSearchString2());
+				}
 			} else if (expense.getSearchString1() != null && expense.getSearchString2() == null) {
+//				if (transaction.getDescription1().contains("APPLE")) {
+//					System.out.printf("expense: %s - transaction: %s", expense.getSearchString1(),
+//							transaction.getDescription1());
+//					System.out.println(transaction.getDescription1().contains(expense.getSearchString1()));
+//				}
 				isTracked = transaction.getDescription1().contains(expense.getSearchString1());
 			} else if (expense.getSearchString1() == null && expense.getSearchString2() != null) {
-				isTracked = transaction.getDescription2().contains(expense.getSearchString2());
+				if (transaction.getDescription2() != null) {
+					isTracked = transaction.getDescription2().contains(expense.getSearchString2());
+				}
 			}
 		}
 		return isTracked;
-		
+
 	}
 
 }
