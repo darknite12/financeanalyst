@@ -1,0 +1,53 @@
+Ok. I would like to create an application called Family Financial Analyst. But first I would like you to help me build the first prompt that. 
+
+I would like to build a SpringBoot application that uses the REST Data Libraries. The REST API will be used to serve a web UI. The Web UI will be a REAC UI. The look an feel should be that of a profesional finacial institution. I would like to use JAVA (the latest stable) and Maven as an application manager. The database will be  MariaDB in production and H2 for testing. I want you to be a responsible software engineer. You will use Test Driven Development to achieve shifting testing left and use specification by Example.  This means that we will create Test Cases first to describe the application with real life examples. We will use Cucumber for  TDD/BDD
+
+Family Financial Analyst Description
+I have written the following file with the entities
+"""
+
+entity Expense {
+	category String required,
+    name String required,
+    searchString1 String  
+}
+
+entity Income {
+	name String required,
+    category String required,
+    searchString1 String
+}
+
+entity Transaction {
+	accountType String,
+	transactionDate Instant,
+	chequeNumber String,
+	description1 String,
+    description2 String,
+    amountCAD Long,
+    amountUSD Long,
+    isTracked Boolean
+}
+
+relationship OneToOne {
+	Transaction{income} to Income
+    Transaction{expense} to Expense
+}
+
+paginate Transaction with infinite-scroll
+paginate Income, Expense with pagination
+"""
+To explain it plainly there are three main entities, Expense and Income which are self explanitory and transaction.
+
+Transaction Entity
+A transaction may come from many different types of sources (like a bank or credit card institution) that may format a transaction file one way and another source  format it in a different way. The transaction files are usually csv files that you can export from the banking institution. The idea is  that we would would be able to input different types of transaction files and store them in the Transaction entity. Something to look out for is the transaction dates, some banks have different date formats so we have to handle importing the different files.  You will also notice that there is a field called "isTracked" The idea is that when a transaction is imported, it will be analyzed to see if the transaction is an Expense or an Income and then further subcategorized. I will talk about categories in the Expenses/Income entity.
+
+Expense Entity
+Like mentioned a transaction may be categorized as an Expense but it could be further broken down. The expense could be a grocery expense, a phone bill, gas, car repair, Entertainment, fast food. There may also be an uncategorized category. 
+
+Income Entity
+A transaction could also be categorized as an Income and it could also be futher broken down, for example a gift, income from income source 1, income source 2, income taxes, investments etc.
+
+
+
+So your job is to come up with a prompt that will help me create the application described.
